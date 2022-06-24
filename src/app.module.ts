@@ -1,10 +1,17 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ConfigModule } from '@nestjs/config';
+import { TwitchApiModule } from './twitch/api/api.module';
+import { StorageModule } from './storage/storage.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ScheduleModule.forRoot(),
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+    }),
+    TwitchApiModule,
+    StorageModule,
+  ],
 })
-export class AppModule {}
+export class AppModule { }
