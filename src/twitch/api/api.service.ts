@@ -6,7 +6,7 @@ import { TWITCH_ENV_VARS, TWITCH_LINKS } from './api.constants';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TwitchVideo } from '../video.entity';
-import { VideoDto } from '../video.dto';
+import { TwitchVideoDto, VideoDto } from '../video.dto';
 import { validate, validateSync } from 'class-validator';
 
 const URL = 'https://webhook.site/cf076c0f-5535-42b4-984d-a3ce50223ca5';
@@ -76,7 +76,7 @@ export class DefaultTwitchApiService implements TwitchApiService, OnModuleInit {
     status: 'idle',
   })
 
-  public async getNewClips(): Promise<Array<any>> {
+  public async getNewClips( ): Promise<Array<TwitchVideoDto>> {
     const config = await this.getConfigForAuthedRequest();
     const { data: {data: allVideos} } = await this.httpService.get(TWITCH_LINKS.GET_LAST_CLIPS, { ...config, params: { gameId: '509658' } });
     

@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { TwitchVideoStatuses } from "./video.type";
 
 @Entity()
 export class TwitchVideo {
@@ -18,15 +19,5 @@ export class TwitchVideo {
   localVideoPath: string;
 
   @Column()
-  status:
-    "idle" |
-    "handle-progress" |
-    "handle-success" |
-    "handle-error" |
-    "render-progress" |
-    "render-success" |
-    "render-error" | 
-    "upload-success" | 
-    "upload-progress" |
-    "upload-error"
+  status: TwitchVideoStatuses;
 }
