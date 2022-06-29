@@ -6,3 +6,19 @@ services:
       - "3000:3000"
     volumes:
       - .:/app
+  mysql:
+    container_name: twitch-tok-db
+    restart: always
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=twitch-tok
+      - MYSQL_USER=twitch-tok
+      - MYSQL_PASSWORD=twitch-tok
+      - MYSQL_DATABASE=twitch-tok
+    ports:
+    - "3308:3306"
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+     - 6379:6379

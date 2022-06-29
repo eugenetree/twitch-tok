@@ -10,7 +10,7 @@ const shared = [
 ]
 
 @Module({
-  providers: [...shared],
-  exports: [...shared],
+  providers: shared,
+  exports: shared,
 })
 export class HttpModule {}
