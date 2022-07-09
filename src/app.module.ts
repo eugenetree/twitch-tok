@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule } from '@nestjs/config';
-import { TwitchApiModule } from './twitch/api/api.module';
-import { StorageModule } from './storage/storage.module';
-import { TwitchManagerModule } from './twitch/manager/manager.module';
+import { StorageModule } from './modules/storage/storage.module';
+import { TwitchManagerModule } from './modules/twitch-manager/manager.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TwitchVideo } from './twitch/video.entity';
+import { TwitchVideo } from './entities/video.entity';
 import { BullModule } from '@nestjs/bull';
-import { TwitchVideoHandlerModule } from './twitch/video-handler/video-handler.module';
+import { TwitchVideoHandlerModule } from './modules/twitch-video-handler/video-handler.module';
+import { TiktokUploadModule } from './modules/tiktok-upload/tiktok-upload.module';
 
 @Module({
   imports: [
@@ -24,6 +24,10 @@ import { TwitchVideoHandlerModule } from './twitch/video-handler/video-handler.m
       database: 'twitch-tok',
       entities: [TwitchVideo],
       synchronize: true,
+      extra: {
+        charset: 'utf8mb4',
+        collation: 'utf8mb4_unicode_ci',
+      },
     }),
     BullModule.forRoot({
       redis: {
@@ -34,6 +38,8 @@ import { TwitchVideoHandlerModule } from './twitch/video-handler/video-handler.m
     TwitchVideoHandlerModule,
     TwitchManagerModule,
     StorageModule,
+    TiktokUploadModule,
+    ConfigModule,
   ],
 })
 export class AppModule { }
