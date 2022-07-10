@@ -19,4 +19,8 @@ export class DefaultConfigService implements CustomConfigService {
     const stringifiedCookies = this.nestConfigService.get(ENV_VARS.TIKTOK_COOKIES + `_${gameId}`);
     return JSON.parse(stringifiedCookies);
   }
+
+  getCurrentEnv(): 'PROD' | 'DEV' {
+    return this.nestConfigService.get(ENV_VARS.ENV) === 'PROD' ? 'PROD' : 'DEV' 
+  }
 }
