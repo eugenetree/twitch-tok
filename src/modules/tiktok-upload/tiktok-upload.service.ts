@@ -44,15 +44,11 @@ export class DefaultTiktokUploadService implements TiktokUploadService {
 
   public async uploadVideo(video: TwitchVideo): Promise<void> {
     try {
-      const cookies = this.configService.getTikTokCookies(video.gameId);
-      console.log(cookies);
+      const cookies = this.configService.getTikTokCookies(video.gameId, video.lang);
 
       if (!cookies) {
         console.log(`TiktokUploadService > uploadVideosIfAvailable > error > cookies not found`);
       }
-
-      console.log('cookies', cookies);
-
 
       const browser = await puppeteer.launch({
         headless: true,

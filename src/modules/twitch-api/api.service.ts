@@ -51,11 +51,8 @@ export class DefaultTwitchApiService implements TwitchApiService {
     const filteredVideos: Array<TwitchVideoDto> = [];
 
     for (const video of videos) {
-      console.log('---');
       const isVideoPresentedInDb = await this.videosRepository.findOne({ where: { remoteClipUrl: video.url } });
       if (!isVideoPresentedInDb) filteredVideos.push(video);
-      console.log(isVideoPresentedInDb);
-      
     }
     return filteredVideos;
   }

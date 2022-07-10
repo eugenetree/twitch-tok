@@ -1,3 +1,5 @@
+import { TwitchVideoLanguages } from "src/entities/video.type";
+
 export enum ENV_VARS {
   CLIENT_ID = 'TWITCH_CLIENT_ID',
   CLIENT_SECRET = 'TWITCH_CLIENT_SECRET',
@@ -7,5 +9,5 @@ export enum ENV_VARS {
 
 export abstract class ConfigService {
   abstract getGamesIds(): Array<string>;
-  abstract getTikTokCookies(gameId: string): Record<string, unknown>;
+  abstract getTikTokCookies(gameId: string, language: TwitchVideoLanguages): Record<string, unknown>;
 }

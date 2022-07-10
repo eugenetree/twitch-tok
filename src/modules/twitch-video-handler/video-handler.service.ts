@@ -39,7 +39,7 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 
 
 	async onModuleInit() {
-		this.runProcessingForIdleVideos();	
+		// this.runProcessingForIdleVideos();	
 	}
 
 
