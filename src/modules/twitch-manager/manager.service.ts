@@ -34,6 +34,7 @@ export class DefaultTwitchManagerService implements TwitchManagerService {
   public async checkForNewClips(): Promise<void> {
     for (const gameId of this.gamesIds) {
       const newVideos = await this.twitchApiService.getNewClips({gameId});
+      console.log('newVideos', newVideos);
       if (!newVideos.length) return;
   
       const dbVideos = await this.addVideosToDb(newVideos, gameId);

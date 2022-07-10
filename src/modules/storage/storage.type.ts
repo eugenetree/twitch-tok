@@ -1,3 +1,3 @@
 export abstract class StorageService {
-  abstract getFolderPathForVideo(entityId: string): string;
+  abstract getFolderPathForVideo(entityId: number): string;
 }

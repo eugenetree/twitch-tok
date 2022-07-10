@@ -24,7 +24,7 @@ export class DefaultTiktokUploadService implements TiktokUploadService {
   @Cron(CronExpression.EVERY_5_MINUTES)
   public async uploadVideosIfAvailable() {
     if (this.isUploadInProgress) return;
-    
+
     const video = await this.videosRepository.findOne({ where: { status: TwitchVideoStatuses.PREPARE_VIDEOS_SUCCESS } });
     if (!video) return;
 
@@ -34,9 +34,9 @@ export class DefaultTiktokUploadService implements TiktokUploadService {
 
     try {
       await this.uploadVideo(video);
-      this.videosRepository.update(video.id, { status: TwitchVideoStatuses.UPLOAD_ERROR });
+      await this.videosRepository.update(video.id, { status: TwitchVideoStatuses.UPLOAD_SUCCESS });
     } catch (err) {
-      this.videosRepository.update(video.id, { status: TwitchVideoStatuses.UPLOAD_SUCCESS });
+      await this.videosRepository.update(video.id, { status: TwitchVideoStatuses.UPLOAD_ERROR });
     } finally {
       this.isUploadInProgress = false;
     }
@@ -45,9 +45,14 @@ export class DefaultTiktokUploadService implements TiktokUploadService {
   public async uploadVideo(video: TwitchVideo): Promise<void> {
     try {
       const cookies = this.configService.getTikTokCookies(video.gameId);
+      console.log(cookies);
+
       if (!cookies) {
         console.log(`TiktokUploadService > uploadVideosIfAvailable > error > cookies not found`);
       }
+
+      console.log('cookies', cookies);
+
 
       const browser = await puppeteer.launch({
         headless: true,
@@ -57,7 +62,7 @@ export class DefaultTiktokUploadService implements TiktokUploadService {
       })
 
       const page = await browser.newPage();
-      await page.setCookie(cookies as any)
+      await page.setCookie(...cookies as any)
       await page.goto('https://www.tiktok.com/upload', { waitUntil: 'networkidle0', });
 
       const frameHandle = await page.$('iframe');

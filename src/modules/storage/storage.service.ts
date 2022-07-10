@@ -13,8 +13,8 @@ export class DefaultStorageService implements StorageService {
     fs.mkdirSync(this.videosPath, { recursive: true });
   }
 
-  getFolderPathForVideo(entityId: string): string {
-    const dirPath = path.resolve(this.videosPath, entityId);
+  getFolderPathForVideo(entityId: number): string {
+    const dirPath = path.resolve(this.videosPath, String(entityId));
     fs.mkdirSync(dirPath, { recursive: true });
     return dirPath;
   }

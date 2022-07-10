@@ -38,7 +38,7 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 	) { }
 
 
-	onModuleInit() {
+	async onModuleInit() {
 		this.runProcessingForIdleVideos();	
 	}
 
@@ -50,12 +50,11 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 
 	private async runProcessingForIdleVideos() {
 		const videosToProcess = await this.videosRepository.find({where: {status: TwitchVideoStatuses.IDLE}})
-		console.log('videos to process: ', videosToProcess.map((video) => video.id));
 		this.addVideosToQueue(videosToProcess.map((video) => video.id));
 	}
 
 	@Process(CREATE_VIDEO_PROCESS)
-	private async createVideo({ data: id }: Job) {
+	private async createVideo({ data: id }: Job<number>) {
 		console.log(`TwitchVideoHandlerSerivce > createVideo > for video ${id}`)
 
 		const videoEntity = await this.videosRepository.findOneBy({ id });
@@ -69,6 +68,7 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 			await this.mergeVideosToOne({ videoEntity, dirPath: dirPath });
 			await this.videosRepository.update(id, { status: TwitchVideoStatuses.PREPARE_VIDEOS_SUCCESS });
 		} catch (err) {
+			console.log(err);
 			await this.videosRepository.update(id, { status: TwitchVideoStatuses.PREPARE_VIDEOS_ERROR });
 		}
 	}
