@@ -9,7 +9,7 @@ export enum ENV_VARS {
 }
 
 export abstract class ConfigService {
+  abstract getCurrentEnv(): 'PROD' | 'DEV';
   abstract getGamesIds(): Array<string>;
   abstract getTikTokCookies(gameId: string, language: TwitchVideoLanguages): Record<string, unknown>;
-  abstract getCurrentEnv(): 'PROD' | 'DEV'
 }
