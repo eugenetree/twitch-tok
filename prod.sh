@@ -1,4 +1,4 @@
 #!/bin/bash
-yarn run install
+yarn install
 yarn run build
 node dist/main
