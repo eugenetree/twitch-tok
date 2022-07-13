@@ -23,8 +23,7 @@ export class DefaultTwitchApiService implements TwitchApiService {
 
 
   public async getNewClips({ gameId }: { gameId: string }): Promise<Array<TwitchVideoDto>> {
-    try {
-      const config = await this.getConfigForAuthedRequest();
+    const config = await this.getConfigForAuthedRequest();
     const { data: { data: videosFromResponse } } = await this.httpService.get(TWITCH_LINKS.GET_LAST_CLIPS, {
       ...config, params: {
         game_id: gameId,
@@ -34,16 +33,9 @@ export class DefaultTwitchApiService implements TwitchApiService {
     });
 
     const preparedVideos = prepareTwitchVideos(videosFromResponse);
-    console.log('preparedVideos', preparedVideos);
-    
     const notPresentedInDbVideos = await this.getNotPresentedInDbVideos(preparedVideos);
-    console.log('notPresentedInDbVideos', notPresentedInDbVideos);
 
     return notPresentedInDbVideos;
-    } catch(err) {
-      console.log(err);
-      return []
-    }
   }
 
 

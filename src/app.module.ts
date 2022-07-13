@@ -13,6 +13,7 @@ import { TwitchVideoHandlerModule } from './modules/twitch-video-handler/video-h
 import { TiktokUploadModule } from './modules/tiktok-upload/tiktok-upload.module';
 import { ConfigService as CustomConfigService } from './modules/config/config.type';
 import { ConfigModule as CustomConfigModule } from './modules/config/config.module';
+import {StatusMonitorModule} from 'nestjs-status-monitor';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { ConfigModule as CustomConfigModule } from './modules/config/config.modu
       envFilePath: '.env',
     }),
     TypeOrmModule.forRootAsync({
-      imports: [CustomConfigModule],
+      imports: [CustomConfigModule, StatusMonitorModule.forRoot()],
       inject: [CustomConfigService],
       useFactory: (configService: CustomConfigService) => ({
         type: 'mysql',

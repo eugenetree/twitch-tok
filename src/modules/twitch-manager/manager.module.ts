@@ -19,9 +19,6 @@ const shared = [
 @Module({
   imports: [
     TypeOrmModule.forFeature([TwitchVideo]),
-    BullModule.registerQueue({
-      name: 'twitch-video-handler',
-    }),
     TwitchApiModule,
     TwitchVideoHandlerModule,
     HttpModule,
