@@ -10,9 +10,3 @@ export enum TwitchVideoStatuses {
   "UPLOAD_SUCCESS" = "UPLOAD_SUCCESS",
   "UPLOAD_ERROR" = "UPLOAD_ERROR",
 }
-
-export enum TwitchVideoLanguages {
-  "EN" = "en",
-  "EN_GB" = "en-gb",
-  "RU" = "ru",
-}

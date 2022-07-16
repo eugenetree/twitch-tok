@@ -1,8 +1,8 @@
 import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
-import { TwitchVideoLanguages, TwitchVideoStatuses } from "./video.type";
+import { TwitchVideoStatuses } from "./video.type";
 
 @Entity()
-export class TwitchVideo {
+export class TwitchVideo { // TODO: rename it to different name, TwitchVideoEntity, etc. Maybe move it to some other fodler
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -22,7 +22,10 @@ export class TwitchVideo {
   status: TwitchVideoStatuses;
 
   @Column()
-  lang: TwitchVideoLanguages;
+  languageOriginal: string;
+
+  @Column()
+  languageFromConfig: string;
 
   @Column()
   gameId: string;  

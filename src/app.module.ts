@@ -14,6 +14,7 @@ import { TiktokUploadModule } from './modules/tiktok-upload/tiktok-upload.module
 import { ConfigService as CustomConfigService } from './modules/config/config.type';
 import { ConfigModule as CustomConfigModule } from './modules/config/config.module';
 import {StatusMonitorModule} from 'nestjs-status-monitor';
+import { TiktokUpload } from './modules/tiktok-upload/tiktok-upload.entity';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import {StatusMonitorModule} from 'nestjs-status-monitor';
         username: 'twitch-tok',
         password: 'twitch-tok',
         database: 'twitch-tok',
-        entities: [TwitchVideo],
+        entities: [TwitchVideo, TiktokUpload],
         synchronize: configService.getCurrentEnv() === "DEV" ? true : false,
         extra: {
           charset: 'utf8mb4',

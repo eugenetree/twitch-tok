@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { TiktokUploadService } from './tiktok-upload.type';
 import stealthPlugin from 'puppeteer-extra-plugin-stealth';
 import puppeteer from 'puppeteer-extra';
@@ -7,20 +7,29 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TwitchVideo } from '../../entities/video.entity';
 import { Repository } from 'typeorm';
 import { TwitchVideoStatuses } from '../../entities/video.type';
+import { TiktokUpload } from './tiktok-upload.entity';
 import { ConfigService } from '../config/config.type';
+
 
 puppeteer.use(stealthPlugin())
 
 @Injectable()
-export class DefaultTiktokUploadService implements TiktokUploadService {
+export class DefaultTiktokUploadService implements TiktokUploadService, OnModuleInit {
   private isUploadInProgress: boolean = false;
 
   constructor(
     private configService: ConfigService,
     @InjectRepository(TwitchVideo) private videosRepository: Repository<TwitchVideo>,
+    @InjectRepository(TiktokUpload) private tiktokUploadRepository: Repository<TiktokUpload>,
   ) { }
 
-  @Cron(CronExpression.EVERY_5_MINUTES)
+
+  async onModuleInit() {
+    await this.prepareTikTokUploadEntitiesInDb();    
+  }
+
+
+  // @Cron(CronExpression.EVERY_5_MINUTES)
   public async uploadVideosIfAvailable() {
     if (this.isUploadInProgress) return;
 
@@ -44,7 +53,7 @@ export class DefaultTiktokUploadService implements TiktokUploadService {
   }
 
   public async uploadVideo(video: TwitchVideo): Promise<void> {
-    const cookies = this.configService.getTikTokCookies(video.gameId, video.lang);
+    const cookies = this.configService.getTikTokCookies(video.gameId, video.languageFromConfig);
 
     if (!cookies) {
       throw new Error('cookies not found');
@@ -87,5 +96,14 @@ export class DefaultTiktokUploadService implements TiktokUploadService {
 
     await frame?.waitForSelector('.upload-progress');
     await frame?.waitForSelector('.upload-progress', { hidden: true });
+  }
+
+  
+  private async prepareTikTokUploadEntitiesInDb() {
+    const configs = this.configService.getTwitchGamesConfigsAsArray();
+    for (const {gameId, language} of configs) {
+      if (await this.tiktokUploadRepository.findOneBy({ gameId, language })) continue;
+      await this.tiktokUploadRepository.save({ gameId, language });
+    }
   }
 }
