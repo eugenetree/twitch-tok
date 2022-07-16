@@ -33,7 +33,8 @@ import { TiktokUpload } from './modules/tiktok-upload/tiktok-upload.entity';
         password: 'twitch-tok',
         database: 'twitch-tok',
         entities: [TwitchVideo, TiktokUpload],
-        synchronize: configService.getCurrentEnv() === "DEV" ? true : false,
+        // synchronize: configService.getCurrentEnv() === "DEV" ? true : false,
+        synchronize: true, // TODO: add migrations and disable sync for PROD
         extra: {
           charset: 'utf8mb4',
           collation: 'utf8mb4_unicode_ci',
