@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export class TiktokUpload { // TODO: rename it to different name, TikTokUploadEntity, etc
+export class TiktokUpload { // TODO: rename it to different name, TiktokUploader, etc
   @PrimaryGeneratedColumn()
   id: number;
 

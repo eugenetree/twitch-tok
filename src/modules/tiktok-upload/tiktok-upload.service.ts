@@ -25,28 +25,54 @@ export class DefaultTiktokUploadService implements TiktokUploadService, OnModule
 
 
   async onModuleInit() {
-    await this.prepareTikTokUploadEntitiesInDb();    
+    await this.prepareTikTokUploadEntitiesInDb();
   }
 
 
-  // @Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron(CronExpression.EVERY_MINUTE)
   public async uploadVideosIfAvailable() {
     if (this.isUploadInProgress) return;
 
-    const video = await this.videosRepository.findOne({ where: { status: TwitchVideoStatuses.PREPARE_VIDEOS_SUCCESS } });
-    if (!video) return;
+    const videos = await this.videosRepository.find({ where: { status: TwitchVideoStatuses.PREPARE_VIDEOS_SUCCESS } });
+    if (!videos.length) return;
 
-    console.log(`TiktokUploadService | uploadVideosIfAvailable | init | ${video.id}`)
-    this.videosRepository.update(video.id, { status: TwitchVideoStatuses.UPLOAD_PROGRESS });
+    let videoToUpload: TwitchVideo | null = null;
+    let tiktokUploadEntity: TiktokUpload | null = null;
+
+    for (const video of videos) { // TODO: create better naming for tiktokUploadEntity
+      const tiktokUploader = await this.tiktokUploadRepository.findOne({ where: { gameId: video.gameId, language: video.languageFromConfig } });
+      if (!tiktokUploader) continue; 
+
+      console.log(tiktokUploader.lastUploadDate, typeof tiktokUploader.lastUploadDate);
+      
+      if (tiktokUploader.lastUploadDate === null) {
+        videoToUpload = video;
+        tiktokUploadEntity = tiktokUploader;
+        break;
+      }
+
+      const wasLastTiktokUploadMore30MinutesAgo = (Number(new Date()) - Number(tiktokUploader.lastUploadDate) > 1000 * 60 * 10);
+      if (wasLastTiktokUploadMore30MinutesAgo) {
+        videoToUpload = video;
+        tiktokUploadEntity = tiktokUploader;
+        break;
+      }
+    }
+
+    if (!videoToUpload || !tiktokUploadEntity) throw new Error('no suitable tiktok account');
+
+    console.log(`TiktokUploadService | uploadVideosIfAvailable | init | ${videoToUpload.id}`)
+    this.videosRepository.update(videoToUpload.id, { status: TwitchVideoStatuses.UPLOAD_PROGRESS });
     this.isUploadInProgress = true;
 
     try {
-      await this.uploadVideo(video);
-      await this.videosRepository.update(video.id, { status: TwitchVideoStatuses.UPLOAD_SUCCESS });
-      console.log(`TiktokUploadService | uploadVideosIfAvailable | success | ${video.id}`)
+      await this.uploadVideo(videoToUpload);
+      this.tiktokUploadRepository.update(tiktokUploadEntity.id, { lastUploadDate: new Date() })
+      await this.videosRepository.update(videoToUpload.id, { status: TwitchVideoStatuses.UPLOAD_SUCCESS });
+      console.log(`TiktokUploadService | uploadVideosIfAvailable | success | ${videoToUpload.id}`)
     } catch (err) {
       console.log(`TiktokUploadService | uploadVideosIfAvailable | error | `, err)
-      await this.videosRepository.update(video.id, { status: TwitchVideoStatuses.UPLOAD_ERROR });
+      await this.videosRepository.update(videoToUpload.id, { status: TwitchVideoStatuses.UPLOAD_ERROR });
     } finally {
       this.isUploadInProgress = false;
     }
@@ -98,10 +124,10 @@ export class DefaultTiktokUploadService implements TiktokUploadService, OnModule
     await frame?.waitForSelector('.upload-progress', { hidden: true });
   }
 
-  
+
   private async prepareTikTokUploadEntitiesInDb() {
     const configs = this.configService.getTwitchGamesConfigsAsArray();
-    for (const {gameId, language} of configs) {
+    for (const { gameId, language } of configs) {
       if (await this.tiktokUploadRepository.findOneBy({ gameId, language })) continue;
       await this.tiktokUploadRepository.save({ gameId, language });
     }

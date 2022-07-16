@@ -40,7 +40,7 @@ export class DefaultTwitchApiService implements TwitchApiService {
 
       const validVideos = this.twitchApiValidator.validateVideos(videosFromResponse, { language, minViewsCount });
       const notPresentedInDbVideos = await this.getNotPresentedInDbVideos(validVideos);
-      result.push(notPresentedInDbVideos);
+      result.push(...notPresentedInDbVideos);
 
       const hasLastVideoRequiredViewsAmount =
         this.twitchApiValidator.validateVideo(videosFromResponse[videosFromResponse.length - 1], { language: "all", minViewsCount });
@@ -56,9 +56,8 @@ export class DefaultTwitchApiService implements TwitchApiService {
   }
 
 
-  private async getNotPresentedInDbVideos(videos: Array<TwitchVideoDto>): Promise<any> {
+  private async getNotPresentedInDbVideos(videos: Array<TwitchVideoDto>): Promise<Array<TwitchVideoDto>> {
     const filteredVideos: Array<TwitchVideoDto> = [];
-
     for (const video of videos) {
       const isVideoPresentedInDb = await this.videosRepository.findOne({ where: { remoteClipUrl: video.url } });
       if (!isVideoPresentedInDb) filteredVideos.push(video);

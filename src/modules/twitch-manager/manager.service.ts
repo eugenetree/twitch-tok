@@ -23,8 +23,8 @@ export class DefaultTwitchManagerService implements TwitchManagerService, OnModu
 
 
   async onModuleInit() {
-    // await this.runProcessingForIdleVideos();
-    // await this.checkForNewClips();
+    await this.runProcessingForIdleVideos();
+    await this.checkForNewClips();
   }
 
 
@@ -47,6 +47,9 @@ export class DefaultTwitchManagerService implements TwitchManagerService, OnModu
   }
 
   private addVideosToDb(videos: Array<TwitchVideoDto>, gameId: string) {
+    videos.map(video => console.log(video));
+    
+
     return Promise.all(videos.map((video) => this.videosRepository.save({
       title: video.title,
       creatorName: video.creatorName,

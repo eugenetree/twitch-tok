@@ -11,8 +11,8 @@ const isLanguageValid = (videoLanguage: string, languageFromConfig: string) => {
   if (languageFromConfig === "all") return true;
 
   if (languageFromConfig.includes("not_")) {
-    const languageToAvoid = languageFromConfig.split('_')[1];
-    return languageToAvoid !== videoLanguage;
+    const languagesToAvoid = languageFromConfig.split('_').slice(1);
+    return !languagesToAvoid.includes(videoLanguage);
   }
 
   return videoLanguage === languageFromConfig;
