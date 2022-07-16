@@ -32,7 +32,7 @@ export class DefaultTwitchManagerService implements TwitchManagerService, OnModu
   public async checkForNewClips(): Promise<void> {
     for (const gameConfig of this.gamesConfigs) {
       const newVideos = await this.twitchApiService.getNewClips(gameConfig);
-      if (!newVideos.length) return;
+      if (!newVideos.length) continue;
 
       const dbVideos = await this.addVideosToDb(newVideos, gameConfig.gameId);
       const dbVideosIds = dbVideos.map((video) => video.id);

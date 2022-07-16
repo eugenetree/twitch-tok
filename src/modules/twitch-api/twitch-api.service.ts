@@ -24,7 +24,7 @@ export class DefaultTwitchApiService implements TwitchApiService {
   ) { }
 
 
-  public async getNewClips({ gameId, language, minViewsCount }: TwitchGameConfig): Promise<Array<TwitchVideoDto>> {
+  public async getNewClips({ gameId, language, minViewsCount }: TwitchGameConfig): Promise<Array<TwitchVideoDto>> {    
     const config = await this.getConfigForAuthedRequest();
     const result: Array<TwitchVideoDto> = [];
 
@@ -44,7 +44,7 @@ export class DefaultTwitchApiService implements TwitchApiService {
 
       const hasLastVideoRequiredViewsAmount =
         this.twitchApiValidator.validateVideo(videosFromResponse[videosFromResponse.length - 1], { language: "all", minViewsCount });
-
+        
       if (hasLastVideoRequiredViewsAmount) {
         if (pagination?.cursor) await getPaginatedClips(pagination?.cursor)
       }
