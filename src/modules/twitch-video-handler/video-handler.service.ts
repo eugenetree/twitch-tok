@@ -13,6 +13,7 @@ import { HttpService } from 'src/modules/http/http.type';
 import { exec, execSync } from 'child_process';
 import { TwitchVideoStatuses } from '../../entities/video.type';
 import { StorageService } from '../storage/storage.type';
+import { Worker } from 'worker_threads';
 
 const videoRecordConfig = {
 	followNewTab: true,
@@ -49,13 +50,13 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 	public async addVideosToQueue(ids: Array<number>): Promise<void> {
 		console.log('addVideosToQueue', ids);
 		for (const id of ids) {
-			await this.twitchVideoHandlerQueue.add(CREATE_VIDEO_PROCESS, {id});
+			await this.twitchVideoHandlerQueue.add(CREATE_VIDEO_PROCESS, { id });
 		}
 	}
 
 
 	@Process(CREATE_VIDEO_PROCESS)
-	private async createVideo({ data: {id}, moveToCompleted }: Job<{id: number}>) {
+	private async createVideo({ data: { id } }: Job<{ id: number }>) {
 		const videoEntity = await this.videosRepository.findOneBy({ id });
 		if (videoEntity === null) throw new Error("TwitchVideoHandlerSerivce > createVideo > videoEntity wasn't created before processing video");
 
@@ -134,8 +135,16 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 
 
 	async mergeVideosToOne({ videoEntity, dirPath }: { videoEntity: TwitchVideo; dirPath: string; }): Promise<void> {
-		const command = exec(`ffmpeg -i ${path.join(dirPath, 'underlay.mp4')} -i ${path.join(dirPath, 'overlay.mp4')} -filter_complex "[1:v] scale=1080:-1 [test]; [0][test]overlay=0:0" -c:a copy  ${path.join(dirPath, 'output.mp4 -y')}`);
-		await new Promise((resolve) => command.on('close', resolve));
-		await this.videosRepository.update(videoEntity.id, { localVideoPath: path.resolve(dirPath, 'output.mp4') });
+		return new Promise(resolve => {
+			const worker = new Worker(path.join(__dirname, '.video-handler.worker.js'));
+			worker.postMessage(dirPath)
+			worker.on('message', async (result) => {
+				await this.videosRepository.update(videoEntity.id, { localVideoPath: path.resolve(dirPath, 'output.mp4') });
+				console.log(result);
+				resolve(result);
+			})
+
+		})
+
 	}
 }
