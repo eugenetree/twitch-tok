@@ -29,7 +29,7 @@ export class DefaultTiktokUploadService implements TiktokUploadService, OnModule
   }
 
 
-  @Interval(100000)
+  @Interval(30000)
   public async uploadVideosIfAvailable() {
     if (this.configService.isBusy()) {
       console.log('upload is unavailable because busy');
@@ -55,7 +55,7 @@ export class DefaultTiktokUploadService implements TiktokUploadService, OnModule
         break;
       }
 
-      const wasLastTiktokUploadMore30MinutesAgo = (Number(new Date()) - Number(tiktokUploader.lastUploadDate) > 1000 * 60 * 10);
+      const wasLastTiktokUploadMore30MinutesAgo = (Number(new Date()) - Number(tiktokUploader.lastUploadDate) > 1000 * 60 * 5);
       if (wasLastTiktokUploadMore30MinutesAgo) {
         videoToUpload = video;
         tiktokUploadEntity = tiktokUploader;
@@ -133,6 +133,7 @@ export class DefaultTiktokUploadService implements TiktokUploadService, OnModule
 
     } catch (err) {
       browser.close();
+      throw err;
     }
   }
 

@@ -15,7 +15,7 @@ import { TwitchVideoStatuses } from '../../entities/video.type';
 import { StorageService } from '../storage/storage.type';
 import { Worker } from 'worker_threads';
 import { ConfigService } from '../config/config.type';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron, CronExpression, Interval } from '@nestjs/schedule';
 
 const videoRecordConfig = {
 	followNewTab: true,
@@ -58,7 +58,7 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 	// }
 
 
-	@Cron(CronExpression.EVERY_MINUTE)
+	@Interval(120000)
 	private async createVideo() {
 		if (this.configService.isBusy()) {
 			console.log('video handling unavailable because is busy	');
@@ -68,9 +68,9 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 		if (videoEntity === null) throw new Error("TwitchVideoHandlerSerivce > no video to process");
 
 		this.configService.setIsBusy(true);
+		const id = videoEntity.id;
 
 		try {
-			const id = videoEntity.id;
 			console.log(`TwitchVideoHandlerSerivce | createVideo | init | ${id}`)
 			const dirPath = this.storageService.getFolderPathForVideo(id);
 			await this.videosRepository.update(id, { status: TwitchVideoStatuses.PREPARE_VIDEOS_PROGRESS });
