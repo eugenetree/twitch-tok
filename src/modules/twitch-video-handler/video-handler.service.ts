@@ -70,6 +70,7 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 		this.configService.setIsBusy(true);
 
 		try {
+			const id = videoEntity.id;
 			console.log(`TwitchVideoHandlerSerivce | createVideo | init | ${id}`)
 			const dirPath = this.storageService.getFolderPathForVideo(id);
 			await this.videosRepository.update(id, { status: TwitchVideoStatuses.PREPARE_VIDEOS_PROGRESS });
