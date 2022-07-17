@@ -136,7 +136,7 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 
 	async mergeVideosToOne({ videoEntity, dirPath }: { videoEntity: TwitchVideo; dirPath: string; }): Promise<void> {
 		return new Promise(resolve => {
-			const worker = new Worker(path.join(__dirname, '.video-handler.worker.js'));
+			const worker = new Worker(path.join(__dirname, 'video-handler-worker.js'));
 			worker.postMessage(dirPath)
 			worker.on('message', async (result) => {
 				await this.videosRepository.update(videoEntity.id, { localVideoPath: path.resolve(dirPath, 'output.mp4') });
