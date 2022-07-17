@@ -47,7 +47,7 @@ import { TiktokUpload } from './modules/tiktok-upload/tiktok-upload.entity';
         port: 6379,
       },
       settings: {
-        stalledInterval: 0,
+        stalledInterval: 1000 * 60 * 60,
       }
     }),
     TwitchVideoHandlerModule,
