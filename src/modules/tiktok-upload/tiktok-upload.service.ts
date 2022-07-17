@@ -36,7 +36,10 @@ export class DefaultTiktokUploadService implements TiktokUploadService, OnModule
     };
     if (this.isUploadInProgress) return;
 
-    const videos = await this.videosRepository.find({ where: { status: TwitchVideoStatuses.PREPARE_VIDEOS_SUCCESS } });
+    const videos = [
+      ...await this.videosRepository.find({ where: { status: TwitchVideoStatuses.PREPARE_VIDEOS_SUCCESS } }),
+      ...await this.videosRepository.find({ where: { status: TwitchVideoStatuses.UPLOAD_ERROR } })
+    ];
     if (!videos.length) return;
 
     let videoToUpload: TwitchVideo | null = null;

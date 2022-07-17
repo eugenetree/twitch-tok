@@ -46,10 +46,7 @@ export class DefaultTwitchManagerService implements TwitchManagerService, OnModu
 
   @Cron(CronExpression.EVERY_MINUTE)
   private async check() {
-    console.log('CHECK START');
-
     if (this.configService.isBusy()) {
-      console.log('CHECK BUSY');
       return;
     };
 
