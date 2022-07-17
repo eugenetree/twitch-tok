@@ -29,7 +29,6 @@ export class DefaultTiktokUploadService implements TiktokUploadService, OnModule
   }
 
 
-  @Interval(30000)
   public async uploadVideosIfAvailable() {
     if (this.configService.isBusy()) {
       console.log('upload is unavailable because busy');
@@ -78,6 +77,7 @@ export class DefaultTiktokUploadService implements TiktokUploadService, OnModule
       console.log(`TiktokUploadService | uploadVideosIfAvailable | success | ${videoToUpload.id}`)
     } catch (err) {
       console.log(`TiktokUploadService | uploadVideosIfAvailable | error | `, err)
+      this.tiktokUploadRepository.update(tiktokUploadEntity.id, { lastUploadDate: new Date(Number(new Date()) + 1000 * 60 * 60) })
       await this.videosRepository.update(videoToUpload.id, { status: TwitchVideoStatuses.UPLOAD_ERROR });
     } finally {
       this.isUploadInProgress = false;

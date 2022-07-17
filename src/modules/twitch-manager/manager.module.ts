@@ -8,6 +8,7 @@ import { TwitchVideoHandlerModule } from '../twitch-video-handler/video-handler.
 import { TwitchVideo } from '../../entities/video.entity';
 import { DefaultTwitchManagerService } from './manager.service';
 import { TwitchManagerService } from './manager.type';
+import { TiktokUploadModule } from '../tiktok-upload/tiktok-upload.module';
 
 const shared = [
   {
@@ -23,6 +24,7 @@ const shared = [
     TwitchVideoHandlerModule,
     HttpModule,
     ConfigModule,
+    TiktokUploadModule,
   ],
   exports: shared,
   providers: shared,

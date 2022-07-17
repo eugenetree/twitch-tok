@@ -9,21 +9,24 @@ import { TwitchVideoStatuses } from '../../entities/video.type';
 import { TwitchManagerService } from './manager.type';
 import { ConfigService, TwitchGamesConfigsAsArray } from '../config/config.type';
 import { TwitchVideoDto } from '../twitch-api/twitch-api.map';
+import { TiktokUploadService } from '../tiktok-upload/tiktok-upload.type';
 
 @Injectable()
 export class DefaultTwitchManagerService implements TwitchManagerService, OnModuleInit {
   gamesConfigs: TwitchGamesConfigsAsArray = this.configService.getTwitchGamesConfigsAsArray();
+  isSwapped: boolean = false;
 
   constructor(
     @InjectRepository(TwitchVideo) private videosRepository: Repository<TwitchVideo>,
     private readonly twitchApiService: TwitchApiService,
     private readonly twitchVideoHandlerService: TwitchVideoHandlerService,
+    private tiktokUploadService: TiktokUploadService,
     private configService: ConfigService,
   ) { }
 
 
   async onModuleInit() {
-    await this.runProcessingForIdleVideos();
+    // await this.runProcessingForIdleVideos();
     await this.checkForNewClips();
   }
 
@@ -41,6 +44,21 @@ export class DefaultTwitchManagerService implements TwitchManagerService, OnModu
   }
 
 
+  @Cron(CronExpression.EVERY_MINUTE)
+  private async check() {
+    console.log('CHECK START');
+
+    if (this.configService.isBusy()) {
+      console.log('CHECK BUSY');
+      return;
+    };
+
+    await this.twitchVideoHandlerService.createVideo();
+    await this.tiktokUploadService.uploadVideosIfAvailable();
+    console.log('CHECK FINISH');
+
+  }
+
   private async runProcessingForIdleVideos() {
     // const videosToProcess = await (await this.videosRepository.find({ where: { status: TwitchVideoStatuses.IDLE } }))
     // this.twitchVideoHandlerService.addVideosToQueue(videosToProcess.map((video) => video.id));
@@ -48,7 +66,7 @@ export class DefaultTwitchManagerService implements TwitchManagerService, OnModu
 
   private addVideosToDb(videos: Array<TwitchVideoDto>, gameId: string) {
     videos.map(video => console.log(video));
-    
+
 
     return Promise.all(videos.map((video) => this.videosRepository.save({
       title: video.title,
