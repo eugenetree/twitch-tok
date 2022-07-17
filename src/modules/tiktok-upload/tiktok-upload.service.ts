@@ -57,7 +57,7 @@ export class DefaultTiktokUploadService implements TiktokUploadService, OnModule
         break;
       }
 
-      const wasLastTiktokUploadMore30MinutesAgo = (Number(new Date()) - Number(tiktokUploader.lastUploadDate) > 1000 * 60 * 5);
+      const wasLastTiktokUploadMore30MinutesAgo = (Number(new Date()) - Number(tiktokUploader.lastUploadDate) > 1000 * 60 * 10);
       if (wasLastTiktokUploadMore30MinutesAgo) {
         videoToUpload = video;
         tiktokUploadEntity = tiktokUploader;
