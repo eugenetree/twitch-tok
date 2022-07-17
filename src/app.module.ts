@@ -46,6 +46,9 @@ import { TiktokUpload } from './modules/tiktok-upload/tiktok-upload.entity';
         host: 'redis',
         port: 6379,
       },
+      settings: {
+        stalledInterval: 0,
+      }
     }),
     TwitchVideoHandlerModule,
     TwitchManagerModule,
