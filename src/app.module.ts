@@ -23,7 +23,7 @@ import { TiktokUpload } from './modules/tiktok-upload/tiktok-upload.entity';
       envFilePath: '.env',
     }),
     TypeOrmModule.forRootAsync({
-      imports: [CustomConfigModule, StatusMonitorModule.forRoot()],
+      imports: [CustomConfigModule],
       inject: [CustomConfigService],
       useFactory: (configService: CustomConfigService) => ({
         type: 'mysql',
@@ -46,9 +46,6 @@ import { TiktokUpload } from './modules/tiktok-upload/tiktok-upload.entity';
         host: 'redis',
         port: 6379,
       },
-      settings: {
-        stalledInterval: 1000 * 60 * 60,
-      }
     }),
     TwitchVideoHandlerModule,
     TwitchManagerModule,

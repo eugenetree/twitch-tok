@@ -20,4 +20,6 @@ export abstract class ConfigService {
   abstract getTwitchGamesConfigsAsArray: () => TwitchGamesConfigsAsArray;
   abstract getTwitchGamesConfigsAsObject: () => TwitchGamesConfigsAsObject;
   abstract getTikTokCookies: (gameId: string, languageFromConfig: string) => Record<string, unknown>;
+  abstract isBusy: () => boolean;
+  abstract setIsBusy: (value: boolean) => void;
 }

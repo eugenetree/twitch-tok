@@ -35,15 +35,15 @@ export class DefaultTwitchManagerService implements TwitchManagerService, OnModu
       if (!newVideos.length) continue;
 
       const dbVideos = await this.addVideosToDb(newVideos, gameConfig.gameId);
-      const dbVideosIds = dbVideos.map((video) => video.id);
-      await this.twitchVideoHandlerService.addVideosToQueue(dbVideosIds);
+      // const dbVideosIds = dbVideos.map((video) => video.id);
+      // await this.twitchVideoHandlerService.addVideosToQueue(dbVideosIds);
     }
   }
 
 
   private async runProcessingForIdleVideos() {
-    const videosToProcess = await (await this.videosRepository.find({ where: { status: TwitchVideoStatuses.IDLE } }))
-    this.twitchVideoHandlerService.addVideosToQueue(videosToProcess.map((video) => video.id));
+    // const videosToProcess = await (await this.videosRepository.find({ where: { status: TwitchVideoStatuses.IDLE } }))
+    // this.twitchVideoHandlerService.addVideosToQueue(videosToProcess.map((video) => video.id));
   }
 
   private addVideosToDb(videos: Array<TwitchVideoDto>, gameId: string) {

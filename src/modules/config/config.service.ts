@@ -23,6 +23,8 @@ const getGamesConfigsAsObject = (gamesConfigs: TwitchGamesConfigsAsArray): Twitc
 // TODO: check more info about using types like Type['someKeyOfThisType'] and rework all code to this structure
 @Injectable()
 export class DefaultConfigService implements CustomConfigService {
+  private isMainThreadBusy: boolean = false;
+
   constructor(private nestConfigService: NestConfigService) { }
 
   getCurrentEnv(): 'PROD' | 'DEV' {
@@ -55,5 +57,13 @@ export class DefaultConfigService implements CustomConfigService {
 
     const stringifiedCookies = this.nestConfigService.get(ENV_VARS.TIKTOK_COOKIES + `_${gameId}`);
     return JSON.parse(stringifiedCookies);
+  }
+
+  isBusy(): boolean {
+    return this.isMainThreadBusy;
+  }
+
+  setIsBusy(value: boolean) {
+    this.isMainThreadBusy = value;
   }
 }

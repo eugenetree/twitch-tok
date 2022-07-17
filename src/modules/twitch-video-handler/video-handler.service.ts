@@ -14,6 +14,8 @@ import { exec, execSync } from 'child_process';
 import { TwitchVideoStatuses } from '../../entities/video.type';
 import { StorageService } from '../storage/storage.type';
 import { Worker } from 'worker_threads';
+import { ConfigService } from '../config/config.type';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 const videoRecordConfig = {
 	followNewTab: true,
@@ -36,29 +38,36 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 		@InjectRepository(TwitchVideo) private videosRepository: Repository<TwitchVideo>,
 		private httpService: HttpService,
 		private storageService: StorageService,
+		private configService: ConfigService,
 	) { }
 
 
 	async onModuleInit() {
-		await this.twitchVideoHandlerQueue.clean(0, 'completed');
-		await this.twitchVideoHandlerQueue.clean(0, 'active');
-		await this.twitchVideoHandlerQueue.clean(0, 'wait');
+		// await this.twitchVideoHandlerQueue.clean(0, 'completed');
+		// await this.twitchVideoHandlerQueue.clean(0, 'active');
+		// await this.twitchVideoHandlerQueue.clean(0, 'wait');
 		// await this.twitchVideoHandlerQueue.clean(0, s'wait');
 	}
 
 
-	public async addVideosToQueue(ids: Array<number>): Promise<void> {
-		console.log('addVideosToQueue', ids);
-		for (const id of ids) {
-			await this.twitchVideoHandlerQueue.add(CREATE_VIDEO_PROCESS, { id });
-		}
-	}
+	// public async addVideosToQueue(ids: Array<number>): Promise<void> {
+	// 	console.log('addVideosToQueue', ids);
+	// 	for (const id of ids) {
+	// 		await this.twitchVideoHandlerQueue.add(CREATE_VIDEO_PROCESS, { id });
+	// 	}
+	// }
 
 
-	@Process(CREATE_VIDEO_PROCESS)
-	private async createVideo({ data: { id } }: Job<{ id: number }>) {
-		const videoEntity = await this.videosRepository.findOneBy({ id });
-		if (videoEntity === null) throw new Error("TwitchVideoHandlerSerivce > createVideo > videoEntity wasn't created before processing video");
+	@Cron(CronExpression.EVERY_MINUTE)
+	private async createVideo() {
+		if (this.configService.isBusy()) {
+			console.log('video handling unavailable because is busy	');
+			return
+		};
+		const videoEntity = await this.videosRepository.findOne({where: {status: TwitchVideoStatuses.IDLE}});
+		if (videoEntity === null) throw new Error("TwitchVideoHandlerSerivce > no video to process");
+
+		this.configService.setIsBusy(true);
 
 		try {
 			console.log(`TwitchVideoHandlerSerivce | createVideo | init | ${id}`)
@@ -72,6 +81,8 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 		} catch (err) {
 			console.log(`TwitchVideoHandlerSerivce | createVideo | error | ${err}`)
 			await this.videosRepository.update(id, { status: TwitchVideoStatuses.PREPARE_VIDEOS_ERROR });
+		} finally {
+			this.configService.setIsBusy(false);
 		}
 	}
 
