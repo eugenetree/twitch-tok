@@ -50,10 +50,17 @@ export class DefaultTwitchManagerService implements TwitchManagerService, OnModu
       return;
     };
 
-    await this.twitchVideoHandlerService.createVideo();
-    await this.tiktokUploadService.uploadVideosIfAvailable();
-    console.log('CHECK FINISH');
+    try { // TODO: rework
+      await this.twitchVideoHandlerService.createVideo();
+    } catch (err) {
+      console.log(err);
+    }
 
+    try {
+      await this.tiktokUploadService.uploadVideosIfAvailable();
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   private async runProcessingForIdleVideos() {
