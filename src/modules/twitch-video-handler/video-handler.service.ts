@@ -103,7 +103,8 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 			const page = await browser.newPage();
 			const recorder = new PuppeteerScreenRecorder(page, videoRecordConfig);
 
-			await page.goto(remoteClipUrl);
+			console.log(remoteClipUrl);
+			await page.goto(remoteClipUrl, { timeout: 0 });
 			await page.waitForSelector('.tw-loading-spinner', { hidden: true });
 			await page.evaluate(() => { document.querySelector('video')?.pause() })
 			await page.click('button[data-a-target=player-theatre-mode-button]');

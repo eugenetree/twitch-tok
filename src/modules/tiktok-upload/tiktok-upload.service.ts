@@ -105,7 +105,7 @@ export class DefaultTiktokUploadService implements TiktokUploadService, OnModule
     try {
       const page = await browser.newPage();
       await page.setCookie(...cookies as any)
-      await page.goto('https://www.tiktok.com/upload', { waitUntil: 'networkidle0', });
+      await page.goto('https://www.tiktok.com/upload', { waitUntil: 'networkidle0', timeout: 0 });
 
       const frameHandle = await page.$('iframe');
 
