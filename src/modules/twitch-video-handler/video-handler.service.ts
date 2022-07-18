@@ -63,7 +63,9 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 			console.log('video handling unavailable because is busy	');
 			return
 		};
-		const videoEntity = await this.videosRepository.findOne({where: {status: TwitchVideoStatuses.IDLE}});
+		const videoEntity =
+			await this.videosRepository.findOne({ where: { status: TwitchVideoStatuses.PREPARE_VIDEOS_ERROR } }) ||
+			await this.videosRepository.findOne({ where: { status: TwitchVideoStatuses.IDLE } });
 		if (videoEntity === null) throw new Error("TwitchVideoHandlerSerivce > no video to process");
 
 		this.configService.setIsBusy(true);
@@ -87,6 +89,7 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 	}
 
 	private async getVideosForRender({ videoEntity, dirPath }: { videoEntity: TwitchVideo; dirPath: string }): Promise<void> {
+
 		const { id, remoteClipUrl } = videoEntity;
 
 		const browser = await puppeeter.launch({
@@ -96,52 +99,56 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 			args: ['--no-sandbox'],
 		})
 
-		const page = await browser.newPage();
-		const recorder = new PuppeteerScreenRecorder(page, videoRecordConfig);
+		try {
+			const page = await browser.newPage();
+			const recorder = new PuppeteerScreenRecorder(page, videoRecordConfig);
 
-		await page.goto(remoteClipUrl);
-		await page.waitForSelector('.tw-loading-spinner', { hidden: true });
-		await page.evaluate(() => { document.querySelector('video')?.pause() })
-		await page.click('button[data-a-target=player-theatre-mode-button]');
+			await page.goto(remoteClipUrl);
+			await page.waitForSelector('.tw-loading-spinner', { hidden: true });
+			await page.evaluate(() => { document.querySelector('video')?.pause() })
+			await page.click('button[data-a-target=player-theatre-mode-button]');
 
-		await page.evaluate(() => {
-			const el = document.querySelector('.video-chat__header');
-			el?.parentElement?.removeChild(el);
-		})
+			await page.evaluate(() => {
+				const el = document.querySelector('.video-chat__header');
+				el?.parentElement?.removeChild(el);
+			})
 
-		await recorder.start(path.join(dirPath, 'underlay.mp4'));
-		await page.evaluate(() => { document.querySelector('video')?.play() })
-		await page.evaluate(() => new Promise(resolve => {
-			const video = document.querySelector('video');
-			const interval = setInterval(() => {
-				if (video?.currentTime === video?.duration) {
-					resolve(true);
-					clearInterval(interval);
-				};
-			}, 1000)
-		}))
-		await recorder.stop();
+			await recorder.start(path.join(dirPath, 'underlay.mp4'));
+			await page.evaluate(() => { document.querySelector('video')?.play() })
+			await page.evaluate(() => new Promise(resolve => {
+				const video = document.querySelector('video');
+				const interval = setInterval(() => {
+					if (video?.currentTime === video?.duration) {
+						resolve(true);
+						clearInterval(interval);
+					};
+				}, 1000)
+			}))
+			await recorder.stop();
 
-		const clipDownloadUrl = await page.evaluate(() => {
-			return document.querySelector('video')?.src;
-		})
+			const clipDownloadUrl = await page.evaluate(() => {
+				return document.querySelector('video')?.src;
+			})
 
-		if (!clipDownloadUrl) throw new Error('clipDownloadUrl wasn\'t parsed');
+			if (!clipDownloadUrl) throw new Error('clipDownloadUrl wasn\'t parsed');
 
-		await browser.close();
+			await browser.close();
 
-		const { data } = await this.httpService.get(clipDownloadUrl, { responseType: 'stream' });
-		data.pipe(fs.createWriteStream(path.join(dirPath, 'overlay.mp4')));
+			const { data } = await this.httpService.get(clipDownloadUrl, { responseType: 'stream' });
+			data.pipe(fs.createWriteStream(path.join(dirPath, 'overlay.mp4')));
 
-		await new Promise((resolve, reject) => {
-			data.on('end', () => {
-				resolve('');
+			await new Promise((resolve, reject) => {
+				data.on('end', () => {
+					resolve('');
 
-			});
-			data.on('error', () => {
-				reject()
-			});
-		})
+				});
+				data.on('error', () => {
+					reject()
+				});
+			})
+		} finally {
+			await browser.close();
+		}
 	}
 
 

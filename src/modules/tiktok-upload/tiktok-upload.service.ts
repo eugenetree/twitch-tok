@@ -134,9 +134,8 @@ export class DefaultTiktokUploadService implements TiktokUploadService, OnModule
       await frame?.waitForSelector('.upload-progress');
       await frame?.waitForSelector('.upload-progress', { hidden: true });
 
-    } catch (err) {
+    } finally {
       browser.close();
-      throw err;
     }
   }
 
