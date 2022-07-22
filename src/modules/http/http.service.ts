@@ -9,9 +9,6 @@ import { applyAxiosCaseConverter } from './http.helpers';
 export class DefaultHttpService implements HttpService {
   private readonly client = applyAxiosCaseConverter(axios.create());
 
-  constructor() {
-  }
-
   async get(path: string, config?: HttpRequestConfig): Promise<HttpRequstReturnType> {
     return this.client.get(path, config);
   }

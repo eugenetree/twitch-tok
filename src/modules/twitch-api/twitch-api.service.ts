@@ -8,7 +8,7 @@ import { Repository } from 'typeorm';
 import { TwitchVideo } from '../../entities/video.entity';
 import { TwitchApiValidator } from './twitch-api.validator';
 import { ENV_VARS, TwitchGameConfig } from '../config/config.type';
-import { TwitchVideoDto } from './twitch-api.map';
+import { TwitchApiMap, TwitchVideoDto } from './twitch-api.map';
 
 @Injectable()
 export class DefaultTwitchApiService implements TwitchApiService {

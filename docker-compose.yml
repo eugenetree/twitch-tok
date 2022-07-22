@@ -9,19 +9,19 @@ services:
     volumes:
       - .:/app
   mysql:
-    container_name: twitch-tok-db
+    container_name: twitch_tok_db
     restart: always
     image: mysql:5.7
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     environment:
-      - MYSQL_ROOT_PASSWORD=twitch-tok
-      - MYSQL_USER=twitch-tok
-      - MYSQL_PASSWORD=twitch-tok
-      - MYSQL_DATABASE=twitch-tok
+      - MYSQL_ROOT_PASSWORD=twitch_tok
+      - MYSQL_USER=twitch_tok
+      - MYSQL_PASSWORD=twitch_tok
+      - MYSQL_DATABASE=twitch_tok
     ports:
     - "3308:3306"
   redis:
-    container_name: twitch-tok-redis
+    container_name: twitch_tok_redis
     image: redis:alpine
     restart: always
     ports:

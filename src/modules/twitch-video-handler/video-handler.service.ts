@@ -58,7 +58,7 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 	// }
 
 
-	private async createVideo() {
+	async createVideo() {
 		if (this.configService.isBusy()) {
 			console.log('video handling unavailable because is busy	');
 			return
