@@ -7,7 +7,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - .:/app
+      - .:/app:rw
   mysql:
     container_name: twitch_tok_db
     restart: always
@@ -18,6 +18,8 @@ services:
       - MYSQL_USER=${DB_USER}
       - MYSQL_PASSWORD=${DB_PASSWORD}
       - MYSQL_DATABASE=${DB_NAME}
+    volumes:
+      - my-datavolume:/var/lib/mysql
     ports:
     - "3308:3306"
   redis:
@@ -25,5 +27,6 @@ services:
     image: redis:alpine
     restart: always
     ports:
-     - 6379:6379
-     
+     - 6379:6379    
+volumes:
+  my-datavolume:
