@@ -27,11 +27,11 @@ export class DefaultTwitchManagerService implements TwitchManagerService, OnModu
 
   async onModuleInit() {
     // await this.runProcessingForIdleVideos();
-    await this.checkForNewClips();
+    // await this.checkForNewClips();
   }
 
 
-  @Cron(CronExpression.EVERY_HOUR)
+  // @Cron(CronExpression.EVERY_HOUR)
   public async checkForNewClips(): Promise<void> {
     for (const gameConfig of this.gamesConfigs) {
       const newVideos = await this.twitchApiService.getNewClips(gameConfig);
@@ -44,7 +44,7 @@ export class DefaultTwitchManagerService implements TwitchManagerService, OnModu
   }
 
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  // @Cron(CronExpression.EVERY_MINUTE)
   private async check() {
     if (this.configService.isBusy()) {
       return;

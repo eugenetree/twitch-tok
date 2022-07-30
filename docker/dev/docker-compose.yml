@@ -2,12 +2,12 @@ version: '3.4'
 services:
   web:
     build:
-      context: .
-      dockerfile: ./Dockerfile.prod
+      context: ../../
+      dockerfile: docker/dev/Dockerfile
     ports:
       - "3000:3000"
     volumes:
-      - .:/app:rw
+      - ../../:/app
   mysql:
     container_name: twitch_tok_db
     restart: always

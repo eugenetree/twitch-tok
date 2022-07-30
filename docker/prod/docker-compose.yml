@@ -1,23 +1,25 @@
 version: '3.4'
 services:
-  web-dev:
+  web:
     build:
-      context: .
-      dockerfile: ./Dockerfile
+      context: ../../
+      dockerfile: docker/prod/Dockerfile
     ports:
       - "3000:3000"
     volumes:
-      - .:/app
+      - ../../:/app
   mysql:
     container_name: twitch_tok_db
     restart: always
     image: mysql:5.7
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     environment:
-      - MYSQL_ROOT_PASSWORD=twitch_tok
-      - MYSQL_USER=twitch_tok
-      - MYSQL_PASSWORD=twitch_tok
-      - MYSQL_DATABASE=twitch_tok
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+    volumes:
+      - my-datavolume:/var/lib/mysql
     ports:
     - "3308:3306"
   redis:
@@ -25,4 +27,6 @@ services:
     image: redis:alpine
     restart: always
     ports:
-     - 6379:6379
+     - 6379:6379    
+volumes:
+  my-datavolume:
