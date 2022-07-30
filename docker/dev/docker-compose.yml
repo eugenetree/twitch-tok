@@ -1,6 +1,7 @@
 version: '3.4'
 services:
   web:
+    container_name: content_manager_web
     build:
       context: ../../
       dockerfile: docker/dev/Dockerfile
@@ -9,7 +10,7 @@ services:
     volumes:
       - ../../:/app
   mysql:
-    container_name: twitch_tok_db
+    container_name: content_manager_db
     restart: always
     image: mysql:5.7
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
@@ -23,7 +24,7 @@ services:
     ports:
     - "3308:3306"
   redis:
-    container_name: twitch_tok_redis
+    container_name: content_manager_redis
     image: redis:alpine
     restart: always
     ports:
