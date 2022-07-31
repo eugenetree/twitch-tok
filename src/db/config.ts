@@ -6,7 +6,7 @@ import 'dotenv/config';
 
 export const dbConfig: DataSourceOptions = {
   type: 'mysql',
-  host: 'twitch_tok_db',
+  host: 'content_manager_db',
   port: 3306,
   database: process.env.DB_NAME,
   username: process.env.DB_USER,
