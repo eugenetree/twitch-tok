@@ -25,10 +25,10 @@ ps: # show started containers and their status
 	docker-compose -f ${compose_file_path} ps
 
 migrate:
-	docker-compose -f ${compose_file_path} exec web npm run migration:run
+	docker-compose -f ${compose_file_path} exec nest npm run migration:run
 
 connect_front:
-	docker-compose -f ${compose_file_path} exec web bash
+	docker-compose -f ${compose_file_path} exec nest bash
 
 connect_db:
 	docker-compose -f ${compose_file_path} exec mysql bash

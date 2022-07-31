@@ -6,7 +6,7 @@ import 'dotenv/config';
 
 export const dbConfig: DataSourceOptions = {
   type: 'mysql',
-  host: 'content_manager_db',
+  host: 'db',
   port: 3306,
   database: process.env.DB_NAME,
   username: process.env.DB_USER,

@@ -1,7 +1,7 @@
 version: '3.4'
 services:
-  web:
-    container_name: content_manager_web
+  nest:
+    container_name: nest
     build:
       context: ../../
       dockerfile: docker/dev/Dockerfile
@@ -10,7 +10,7 @@ services:
     volumes:
       - ../../:/app
   mysql:
-    container_name: content_manager_db
+    container_name: db
     restart: always
     image: mysql:5.7
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
@@ -24,7 +24,7 @@ services:
     ports:
     - "3308:3306"
   redis:
-    container_name: content_manager_redis
+    container_name: redis
     image: redis:alpine
     restart: always
     ports:
