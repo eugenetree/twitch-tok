@@ -7,7 +7,7 @@ else
 endif
 
 up: # create and start containers
-	docker-compose -f ${compose_file_path} up -d
+	docker-compose -f ${compose_file_path} up
 
 build: # build containers
 	docker-compose -f ${compose_file_path} build 
@@ -27,7 +27,7 @@ ps: # show started containers and their status
 migrate:
 	docker-compose -f ${compose_file_path} exec nest npm run migration:run
 
-connect_front:
+connect_nest:
 	docker-compose -f ${compose_file_path} exec nest bash
 
 connect_db:
