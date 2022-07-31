@@ -10,12 +10,17 @@ const appConfig: AppConfig = {
       type: 'tiktok',
       gameId: '123',
       language: "all",
-      checkTime: CronExpression.EVERY_10_HOURS,
-      uploadTime: CronExpression.EVERY_12_HOURS,
-      requirements: {
-        rating: 20,
-        minViews: 300,
-      }
+      strategies: [
+        {
+          checkTime: CronExpression.EVERY_10_HOURS,
+          uploadTime: CronExpression.EVERY_12_HOURS,
+          renderType: 'oneClipOneVideo',
+          requirements: {
+            rating: 20,
+            minViews: 300,
+          }
+        }
+      ]
     }
   ]
 }

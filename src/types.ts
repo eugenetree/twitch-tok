@@ -3,12 +3,15 @@ type Languages = "ru" | "en"
 type UploaderConfig = {
   gameId: string;
   language: "all" | { exclude?: Languages, include?: Languages };
-  checkTime: string;
-  uploadTime: string;
-  requirements: {
-    rating?: number,
-    minViews?: number,  
-  }
+  strategies: Array<{
+    checkTime: string;
+    uploadTime: string;
+    renderType: "allClipsOneVideo" | "oneClipOneVideo"; 
+    requirements: {
+      rating?: number,
+      minViews?: number,
+    }
+  }>
 }
 
 type TiktokUploaderConfig = UploaderConfig & {
