@@ -64,7 +64,6 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 			return
 		};
 		const videoEntity =
-			await this.videosRepository.findOne({ where: { status: TwitchVideoStatuses.PREPARE_VIDEOS_ERROR } }) ||
 			await this.videosRepository.findOne({ where: { status: TwitchVideoStatuses.IDLE } });
 		if (videoEntity === null) throw new Error("TwitchVideoHandlerSerivce > no video to process");
 
@@ -118,6 +117,9 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 			await page.evaluate(() => { document.querySelector('video')?.play() })
 			await page.evaluate(() => new Promise(resolve => {
 				const video = document.querySelector('video');
+				if (!video || isNaN(video.duration)) {
+					throw new Error('Clip is possibly blocked');
+				}
 				const interval = setInterval(() => {
 					if (video?.currentTime === video?.duration) {
 						resolve(true);
