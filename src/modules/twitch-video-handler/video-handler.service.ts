@@ -7,11 +7,11 @@ import { TwitchVideoHandlerService } from './video-handler.type';
 import fs from 'fs';
 import path from 'path';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TwitchVideo } from '../../entities/video.entity';
+import { VideoEntity } from '../video/video.entity';
 import { Repository } from 'typeorm';
 import { HttpService } from 'src/modules/http/http.type';
 import { exec, execSync } from 'child_process';
-import { TwitchVideoStatuses } from '../../entities/video.type';
+import { TwitchVideoStatuses } from '../video/video.type';
 import { StorageService } from '../storage/storage.type';
 import { Worker } from 'worker_threads';
 import { ConfigService } from '../config/config.type';
@@ -35,7 +35,7 @@ const CREATE_VIDEO_PROCESS = 'create-video';
 export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerService {
 	constructor(
 		@InjectQueue(TWITCH_VIDEO_HANDLER_QUEUE) private twitchVideoHandlerQueue: Queue,
-		@InjectRepository(TwitchVideo) private videosRepository: Repository<TwitchVideo>,
+		@InjectRepository(VideoEntity) private videosRepository: Repository<VideoEntity>,
 		private httpService: HttpService,
 		private storageService: StorageService,
 		private configService: ConfigService,
@@ -88,7 +88,7 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 		}
 	}
 
-	private async getVideosForRender({ videoEntity, dirPath }: { videoEntity: TwitchVideo; dirPath: string }): Promise<void> {
+	private async getVideosForRender({ videoEntity, dirPath }: { videoEntity: VideoEntity; dirPath: string }): Promise<void> {
 
 		const { id, remoteClipUrl } = videoEntity;
 

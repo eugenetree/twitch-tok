@@ -2,7 +2,7 @@ import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HttpModule } from 'src/modules/http/http.module';
-import { TwitchVideo } from '../../entities/video.entity';
+import { VideoEntity } from '../video/video.entity';
 import { ConfigModule } from '../config/config.module';
 import { StorageModule } from '../storage/storage.module';
 import { DefaultTwitchVideoHandlerService } from './video-handler.service';
@@ -15,7 +15,7 @@ const shared = [{
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([TwitchVideo]),
+    TypeOrmModule.forFeature([VideoEntity]),
     BullModule.registerQueue({
       name: 'twitch-video-handler',
     }),

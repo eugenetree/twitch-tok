@@ -1,4 +1,4 @@
-import { TwitchVideo } from "../entities/video.entity";
+import { VideoEntity } from "../modules/video/video.entity";
 import { TiktokUpload } from "../modules/tiktok-upload/tiktok-upload.entity";
 import { DataSource, DataSourceOptions } from "typeorm";
 import { init1658447778880 } from "./migrations/1658447778880-init";
@@ -11,7 +11,7 @@ export const dbConfig: DataSourceOptions = {
   database: process.env.DB_NAME,
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  entities: [TwitchVideo, TiktokUpload],
+  entities: [VideoEntity, TiktokUpload],
   migrations: [init1658447778880],
   synchronize: false,
 }

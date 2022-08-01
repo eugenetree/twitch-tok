@@ -4,8 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TwitchApiService } from '../twitch-api/twitch-api.type';
 import { TwitchVideoHandlerService } from '../twitch-video-handler/video-handler.type';
-import { TwitchVideo } from '../../entities/video.entity';
-import { TwitchVideoStatuses } from '../../entities/video.type';
+import { VideoEntity } from '../video/video.entity';
+import { TwitchVideoStatuses } from '../video/video.type';
 import { TwitchManagerService } from './manager.type';
 import { ConfigService, TwitchGamesConfigsAsArray } from '../config/config.type';
 import { TwitchVideoDto } from '../twitch-api/twitch-api.map';
@@ -17,7 +17,7 @@ export class DefaultTwitchManagerService implements TwitchManagerService, OnModu
   isSwapped: boolean = false;
 
   constructor(
-    @InjectRepository(TwitchVideo) private videosRepository: Repository<TwitchVideo>,
+    @InjectRepository(VideoEntity) private videosRepository: Repository<VideoEntity>,
     private readonly twitchApiService: TwitchApiService,
     private readonly twitchVideoHandlerService: TwitchVideoHandlerService,
     private tiktokUploadService: TiktokUploadService,

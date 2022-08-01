@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TwitchVideo } from '../../entities/video.entity';
+import { VideoEntity } from '../video/video.entity';
 import { ConfigModule } from '../config/config.module';
 import { TiktokUpload } from './tiktok-upload.entity';
 import { DefaultTiktokUploadService } from './tiktok-upload.service';
@@ -15,7 +15,7 @@ const shared = [
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([TwitchVideo, TiktokUpload]),
+    TypeOrmModule.forFeature([VideoEntity, TiktokUpload]),
     ConfigModule,
   ],
   providers: shared,

@@ -20,14 +20,13 @@ const getGamesConfigsAsObject = (gamesConfigs: TwitchGamesConfigsAsArray): Twitc
   return resultObject;
 }
 
-// TODO: check more info about using types like Type['someKeyOfThisType'] and rework all code to this structure
 @Injectable()
 export class DefaultConfigService implements CustomConfigService {
   private isMainThreadBusy: boolean = false;
 
   constructor(private nestConfigService: NestConfigService) { }
 
-  getCurrentEnv(): 'PROD' | 'DEV' {
+  getCurrentEnv: CustomConfigService['getCurrentEnv'] = () => {
     return this.nestConfigService.get(ENV_VARS.ENV) === 'PROD' ? 'PROD' : 'DEV'
   }
 

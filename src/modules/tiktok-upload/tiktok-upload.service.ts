@@ -4,9 +4,9 @@ import stealthPlugin from 'puppeteer-extra-plugin-stealth';
 import puppeteer from 'puppeteer-extra';
 import { Cron, CronExpression, Interval } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TwitchVideo } from '../../entities/video.entity';
+import { VideoEntity } from '../video/video.entity';
 import { Repository } from 'typeorm';
-import { TwitchVideoStatuses } from '../../entities/video.type';
+import { TwitchVideoStatuses } from '../video/video.type';
 import { TiktokUpload } from './tiktok-upload.entity';
 import { ConfigService } from '../config/config.type';
 
@@ -19,7 +19,7 @@ export class DefaultTiktokUploadService implements TiktokUploadService, OnModule
 
   constructor(
     private configService: ConfigService,
-    @InjectRepository(TwitchVideo) private videosRepository: Repository<TwitchVideo>,
+    @InjectRepository(VideoEntity) private videosRepository: Repository<VideoEntity>,
     @InjectRepository(TiktokUpload) private tiktokUploadRepository: Repository<TiktokUpload>,
   ) { }
 
@@ -42,7 +42,7 @@ export class DefaultTiktokUploadService implements TiktokUploadService, OnModule
     ];
     if (!videos.length) return;
 
-    let videoToUpload: TwitchVideo | null = null;
+    let videoToUpload: VideoEntity | null = null;
     let tiktokUploadEntity: TiktokUpload | null = null;
 
     for (const video of videos) { // TODO: create better naming for tiktokUploadEntity
@@ -88,7 +88,7 @@ export class DefaultTiktokUploadService implements TiktokUploadService, OnModule
     }
   }
 
-  public async uploadVideo(video: TwitchVideo): Promise<void> {
+  public async uploadVideo(video: VideoEntity): Promise<void> {
     const cookies = this.configService.getTikTokCookies(video.gameId, video.languageFromConfig);
 
     if (!cookies) {

@@ -5,7 +5,7 @@ import { TwitchApiService } from './twitch-api.type';
 import { TWITCH_LINKS } from './twitch-api.type';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { TwitchVideo } from '../../entities/video.entity';
+import { VideoEntity } from '../video/video.entity';
 import { TwitchApiValidator } from './twitch-api.validator';
 import { ENV_VARS, TwitchGameConfig } from '../config/config.type';
 import { TwitchApiMap, TwitchVideoDto } from './twitch-api.map';
@@ -17,7 +17,7 @@ export class DefaultTwitchApiService implements TwitchApiService {
   private readonly clientSecret: string = this.configService.get(ENV_VARS.CLIENT_SECRET) as string;
 
   constructor(
-    @InjectRepository(TwitchVideo) private videosRepository: Repository<TwitchVideo>,
+    @InjectRepository(VideoEntity) private videosRepository: Repository<VideoEntity>,
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
     private readonly twitchApiValidator: TwitchApiValidator,

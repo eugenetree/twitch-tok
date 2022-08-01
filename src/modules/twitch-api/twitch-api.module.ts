@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TwitchApiService } from './twitch-api.type';
 import { DefaultTwitchApiService } from './twitch-api.service';
 import { HttpModule } from 'src/modules/http/http.module';
-import { TwitchVideo } from '../../entities/video.entity';
+import { VideoEntity } from '../video/video.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TwitchApiMap } from './twitch-api.map';
 import { TwitchApiValidator } from './twitch-api.validator';
@@ -16,7 +16,7 @@ const shared = [{
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([TwitchVideo]),
+    TypeOrmModule.forFeature([VideoEntity]),
     HttpModule,
     CustomConfigModule,
     NestConfigModule,

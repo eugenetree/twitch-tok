@@ -21,7 +21,7 @@ type TiktokUploaderConfig = UploaderConfig & {
 
 type YoutubeUploaderConfig = UploaderConfig & {
   type: "youtube",
-  clientId: string;
+  clientId: string; 
   clientSecret: string;
   tags: Array<string>,
 }
