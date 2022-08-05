@@ -53,13 +53,13 @@ export class DefaultTwitchManagerService implements TwitchManagerService, OnModu
     try { // TODO: rework
       await this.twitchVideoHandlerService.createVideo();
     } catch (err) {
-      console.log(err);
+      console.log(new Date(),err);
     }
 
     try {
       await this.tiktokUploadService.uploadVideosIfAvailable();
     } catch (err) {
-      console.log(err);
+      console.log(new Date(),err);
     }
   }
 
@@ -69,7 +69,7 @@ export class DefaultTwitchManagerService implements TwitchManagerService, OnModu
   }
 
   private addVideosToDb(videos: Array<TwitchVideoDto>, gameId: string) {
-    videos.map(video => console.log(video));
+    videos.map(video => console.log(new Date(),video));
 
 
     return Promise.all(videos.map((video) => this.videosRepository.save({

@@ -27,14 +27,10 @@ const videoRecordConfig = {
 	},
 };
 
-const TWITCH_VIDEO_HANDLER_QUEUE = 'twitch-video-handler';
-const CREATE_VIDEO_PROCESS = 'create-video';
 
 @Injectable()
-@Processor(TWITCH_VIDEO_HANDLER_QUEUE)
 export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerService {
 	constructor(
-		@InjectQueue(TWITCH_VIDEO_HANDLER_QUEUE) private twitchVideoHandlerQueue: Queue,
 		@InjectRepository(TwitchVideo) private videosRepository: Repository<TwitchVideo>,
 		private httpService: HttpService,
 		private storageService: StorageService,
@@ -42,25 +38,9 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 	) { }
 
 
-	async onModuleInit() {
-		// await this.twitchVideoHandlerQueue.clean(0, 'completed');
-		// await this.twitchVideoHandlerQueue.clean(0, 'active');
-		// await this.twitchVideoHandlerQueue.clean(0, 'wait');
-		// await this.twitchVideoHandlerQueue.clean(0, s'wait');
-	}
-
-
-	// public async addVideosToQueue(ids: Array<number>): Promise<void> {
-	// 	console.log('addVideosToQueue', ids);
-	// 	for (const id of ids) {
-	// 		await this.twitchVideoHandlerQueue.add(CREATE_VIDEO_PROCESS, { id });
-	// 	}
-	// }
-
-
 	async createVideo() {
 		if (this.configService.isBusy()) {
-			console.log('video handling unavailable because is busy	');
+			console.log(new Date(),'video handling unavailable because is busy	');
 			return
 		};
 		const videoEntity =
@@ -71,16 +51,16 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 		const id = videoEntity.id;
 
 		try {
-			console.log(`TwitchVideoHandlerSerivce | createVideo | init | ${id}`)
+			console.log(new Date(),`TwitchVideoHandlerSerivce | createVideo | init | ${id}`)
 			const dirPath = this.storageService.getFolderPathForVideo(id);
 			await this.videosRepository.update(id, { status: TwitchVideoStatuses.PREPARE_VIDEOS_PROGRESS });
 			await new Promise(resolve => setTimeout(resolve, 10000));
 			await this.getVideosForRender({ videoEntity, dirPath });
 			await this.mergeVideosToOne({ videoEntity, dirPath: dirPath });
 			await this.videosRepository.update(id, { status: TwitchVideoStatuses.PREPARE_VIDEOS_SUCCESS });
-			console.log(`TwitchVideoHandlerSerivce | createVideo | success | ${id}`)
+			console.log(new Date(),`TwitchVideoHandlerSerivce | createVideo | success | ${id}`)
 		} catch (err) {
-			console.log(`TwitchVideoHandlerSerivce | createVideo | error | ${err}`)
+			console.log(new Date(),`TwitchVideoHandlerSerivce | createVideo | error | ${err}`)
 			await this.videosRepository.update(id, { status: TwitchVideoStatuses.PREPARE_VIDEOS_ERROR });
 		} finally {
 			this.configService.setIsBusy(false);
@@ -102,7 +82,7 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 			const page = await browser.newPage();
 			const recorder = new PuppeteerScreenRecorder(page, videoRecordConfig);
 
-			console.log(remoteClipUrl);
+			console.log(new Date(),remoteClipUrl);
 			await page.goto(remoteClipUrl, { timeout: 0 });
 			await page.waitForSelector('.tw-loading-spinner', { hidden: true });
 			await page.evaluate(() => { document.querySelector('video')?.pause() })
@@ -161,7 +141,7 @@ export class DefaultTwitchVideoHandlerService implements TwitchVideoHandlerServi
 			worker.postMessage(dirPath)
 			worker.on('message', async (result) => {
 				await this.videosRepository.update(videoEntity.id, { localVideoPath: path.resolve(dirPath, 'output.mp4') });
-				console.log(result);
+				console.log(new Date(),result);
 				resolve(result);
 			})
 

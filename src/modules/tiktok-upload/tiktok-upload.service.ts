@@ -31,7 +31,7 @@ export class DefaultTiktokUploadService implements TiktokUploadService, OnModule
 
   public async uploadVideosIfAvailable() {
     if (this.configService.isBusy()) {
-      console.log('upload is unavailable because busy');
+      console.log(new Date(),'upload is unavailable because busy');
       return
     };
     if (this.isUploadInProgress) return;
@@ -49,7 +49,7 @@ export class DefaultTiktokUploadService implements TiktokUploadService, OnModule
       const tiktokUploader = await this.tiktokUploadRepository.findOne({ where: { gameId: video.gameId, language: video.languageFromConfig } });
       if (!tiktokUploader) continue;
 
-      console.log(tiktokUploader.lastUploadDate, typeof tiktokUploader.lastUploadDate);
+      console.log(new Date(),tiktokUploader.lastUploadDate, typeof tiktokUploader.lastUploadDate);
 
       if (tiktokUploader.lastUploadDate === null) {
         videoToUpload = video;
@@ -69,7 +69,7 @@ export class DefaultTiktokUploadService implements TiktokUploadService, OnModule
 
     this.configService.setIsBusy(true);
 
-    console.log(`TiktokUploadService | uploadVideosIfAvailable | init | ${videoToUpload.id}`)
+    console.log(new Date(),`TiktokUploadService | uploadVideosIfAvailable | init | ${videoToUpload.id}`)
     this.videosRepository.update(videoToUpload.id, { status: TwitchVideoStatuses.UPLOAD_PROGRESS });
     this.isUploadInProgress = true;
 
@@ -77,9 +77,9 @@ export class DefaultTiktokUploadService implements TiktokUploadService, OnModule
       await this.uploadVideo(videoToUpload);
       this.tiktokUploadRepository.update(tiktokUploadEntity.id, { lastUploadDate: new Date() })
       await this.videosRepository.update(videoToUpload.id, { status: TwitchVideoStatuses.UPLOAD_SUCCESS });
-      console.log(`TiktokUploadService | uploadVideosIfAvailable | success | ${videoToUpload.id}`)
+      console.log(new Date(),`TiktokUploadService | uploadVideosIfAvailable | success | ${videoToUpload.id}`)
     } catch (err) {
-      console.log(`TiktokUploadService | uploadVideosIfAvailable | error | `, err)
+      console.log(new Date(),`TiktokUploadService | uploadVideosIfAvailable | error | `, err)
       this.tiktokUploadRepository.update(tiktokUploadEntity.id, { lastUploadDate: new Date(Number(new Date()) + 1000 * 60 * 60) })
       await this.videosRepository.update(videoToUpload.id, { status: TwitchVideoStatuses.UPLOAD_ERROR });
     } finally {
