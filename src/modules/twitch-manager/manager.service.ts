@@ -63,10 +63,6 @@ export class DefaultTwitchManagerService implements TwitchManagerService, OnModu
     }
   }
 
-  private async runProcessingForIdleVideos() {
-    // const videosToProcess = await (await this.videosRepository.find({ where: { status: TwitchVideoStatuses.IDLE } }))
-    // this.twitchVideoHandlerService.addVideosToQueue(videosToProcess.map((video) => video.id));
-  }
 
   private addVideosToDb(videos: Array<TwitchVideoDto>, gameId: string) {
     videos.map(video => console.log(new Date(),video));
